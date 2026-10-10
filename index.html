@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BB-RETRO - HTML5 Remake</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Header HUD Bar -->
+    <header id="hud-top">
+      <div class="hud-group">
+        <span class="hud-label">STATUS</span>
+        <span id="hud-state" class="hud-value status-landed">LANDED</span>
+      </div>
+      <div class="hud-group">
+        <span class="hud-label">HELI HP</span>
+        <div class="bar-container">
+          <div id="hp-bar-fill" class="bar-fill" style="width: 100%;"></div>
+        </div>
+        <span id="hud-hp-text" class="hud-value">100%</span>
+      </div>
+      <div class="hud-group">
+        <span class="hud-label">CARRIER HP</span>
+        <div class="bar-container">
+          <div id="carrier-hp-bar-fill" class="bar-fill carrier-bar" style="width: 100%;"></div>
+        </div>
+        <span id="hud-carrier-hp-text" class="hud-value">100%</span>
+      </div>
+      <div class="hud-group">
+        <span class="hud-label">FACTORIES</span>
+        <span id="hud-factories" class="hud-value">0 / 6 DESTROYED</span>
+      </div>
+      <div class="hud-group">
+        <span class="hud-label">BOMBS</span>
+        <span id="hud-bombs" class="hud-value">💣 9 / 9</span>
+      </div>
+    </header>
+
+    <!-- Canvas viewport -->
+    <div id="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- Radar Minimap Overlay (Top Right) -->
+      <div id="minimap-container">
+        <div class="minimap-title">TACTICAL RADAR</div>
+        <canvas id="radarCanvas" width="160" height="160"></canvas>
+      </div>
+
+      <!-- Threat & Battleship Countdown Overlay (Bottom Right) -->
+      <div id="threat-overlay">
+        <div class="threat-row">
+          <span class="hud-label">THREAT LEVEL</span>
+          <span id="hud-threat-level" class="hud-value threat-1">LV.1 NORMAL</span>
+        </div>
+        <div class="threat-row">
+          <span class="hud-label">BATTLESHIP LAUNCH</span>
+          <span id="hud-battleship-timer" class="hud-value">100s</span>
+        </div>
+      </div>
+
+      <!-- Audio Start / Overlay Screen -->
+      <div id="start-overlay">
+        <div class="overlay-box">
+          <h1 class="game-title">BB-RETRO</h1>
+          <p class="game-subtitle">HTML5 CANVAS 2D RETRO REMAKE</p>
+          <div class="instructions-box">
+            <h3>【操作方法 / CONTROLS】</h3>
+            <ul>
+              <li><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> : 左右旋回（ラジコン慣性）</li>
+              <li><kbd>↑</kbd> / <kbd>W</kbd> : 前進加速 / 離陸 (Thrust / Takeoff)</li>
+              <li><kbd>↓</kbd> / <kbd>S</kbd> : 減速 / 空母上で着艦 (Brake / Land)</li>
+              <li><kbd>Space</kbd> : 機関砲連射 (画面でスタート/リスタート)</li>
+              <li><kbd>B</kbd> / <kbd>Shift</kbd> : 対地爆弾投下 (Drop Bomb)</li>
+              <li><kbd>P</kbd> / <kbd>Esc</kbd> : 一時停止 (PAUSE)</li>
+              <li><kbd>M</kbd> : サウンド MUTE 切替</li>
+              <li>🎮 <strong>ゲームパッド対応</strong>: Lスティック/十字キー移動, <kbd>A</kbd>/<kbd>RT</kbd>攻撃, <kbd>B</kbd>/<kbd>LT</kbd>爆弾, <kbd>Start</kbd>ポーズ</li>
+            </ul>
+          </div>
+          <button id="btn-start" class="btn-primary">PRESS START / ENGINE ON [SPACE / 🎮]</button>
+        </div>
+      </div>
+
+      <!-- Pause Modal Overlay -->
+      <div id="pause-overlay" class="hidden">
+        <div class="overlay-box">
+          <h1 class="game-title">PAUSED</h1>
+          <p class="game-subtitle">GAME PAUSED</p>
+          <p class="end-stats-text">PRESS [P] / [ESC] / [START 🎮] TO RESUME</p>
+        </div>
+      </div>
+
+      <!-- Game Over / Victory Modal Overlay -->
+      <div id="end-overlay" class="hidden">
+        <div class="overlay-box">
+          <h1 id="end-title" class="game-title">MISSION COMPLETE!</h1>
+          <p id="end-subtitle" class="game-subtitle">ALL ENEMY FACTORIES DESTROYED</p>
+          <p id="end-stats" class="end-stats-text">TIME: 02:45 | DAMAGE TAKEN: 15%</p>
+          <button id="btn-restart" class="btn-primary">RETRY MISSION [SPACE / 🎮]</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Info Footer -->
+    <footer id="hud-bottom">
+      <div class="footer-info">
+        <span>MISSION: DESTROY ALL 6 ENEMY FACTORIES BEFORE BATTLESCRUISER DESTROYS CARRIER</span>
+        <span class="audio-status" id="audio-indicator">AUDIO: OFF</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/particles.js"></script>
+  <script src="js/enemy.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/carrier.js"></script>
+  <script src="js/helicopter.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
