@@ -1,0 +1,302 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: #060913;
+  color: #e2e8f0;
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#game-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1400px;
+  max-height: 900px;
+  background: #0d1322;
+  border: 2px solid #1e293b;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header HUD */
+#hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 2px solid #334155;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  z-index: 10;
+}
+
+.hud-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-label {
+  color: #94a3b8;
+  font-size: 9px;
+}
+
+.hud-value {
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+.status-landed {
+  color: #4ade80;
+  animation: blink 1.5s infinite;
+}
+
+.status-flying {
+  color: #facc15;
+}
+
+.status-takeoff {
+  color: #fb923c;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.bar-container {
+  width: 100px;
+  height: 12px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #eab308, #22c55e);
+  transition: width 0.2s ease;
+}
+
+.carrier-bar {
+  background: linear-gradient(90deg, #dc2626, #3b82f6, #38bdf8);
+}
+
+/* Canvas viewport */
+#canvas-wrapper {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #0b2545;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Radar Minimap */
+#minimap-container {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  z-index: 12;
+}
+
+.minimap-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+#radarCanvas {
+  width: 160px;
+  height: 160px;
+  background: #0284c715;
+  border: 1px solid #1e293b;
+  border-radius: 4px;
+}
+
+/* Threat & Battleship Overlay */
+#threat-overlay {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  z-index: 12;
+}
+
+.threat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.threat-1 { color: #4ade80; }
+.threat-2 { color: #facc15; }
+.threat-3 { color: #fb923c; }
+.threat-4 { color: #ef4444; animation: blink 1s infinite; }
+
+/* Start, Pause & End Overlays */
+#start-overlay, #pause-overlay, #end-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(6, 12, 26, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  transition: opacity 0.4s ease;
+}
+
+#start-overlay.hidden, #pause-overlay.hidden, #end-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay-box {
+  background: #0f172a;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 35px 45px;
+  max-width: 620px;
+  text-align: center;
+}
+
+.game-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: #38bdf8;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.game-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.end-stats-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: #facc15;
+  margin-bottom: 25px;
+}
+
+.instructions-box {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.instructions-box h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: #facc15;
+  margin-bottom: 15px;
+}
+
+.instructions-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+kbd {
+  background: #334155;
+  border: 1px solid #64748b;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-family: monospace;
+  color: #38bdf8;
+  box-shadow: 0 2px 0 #1e293b;
+}
+
+.btn-primary {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border: none;
+  padding: 16px 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.5);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.7);
+  background: linear-gradient(135deg, #38bdf8, #3b82f6);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Footer HUD */
+#hud-bottom {
+  background: #0f172a;
+  border-top: 1px solid #1e293b;
+  padding: 8px 20px;
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  justify-content: space-between;
+}
+
+.audio-status {
+  color: #38bdf8;
+  font-weight: 600;
+}
